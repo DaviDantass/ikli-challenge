@@ -20,7 +20,7 @@ class SalesFileValidatorTest < ActiveSupport::TestCase
   private
 
   def validate_content(row)
-    Tempfile.create(["sales", ".tab"]) do |file|
+    Tempfile.create([ "sales", ".tab" ]) do |file|
       file.write("#{SalesFileValidator::HEADERS.join("\t")}\n#{row}\n")
       file.flush
       SalesFileValidator.new(file).validate!
