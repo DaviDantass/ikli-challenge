@@ -17,7 +17,7 @@ class ImportsController < ApplicationController
 
     @total = SalesImporter.new(file).call
     render :new
-  rescue SalesImporter::InvalidFileError => error
+  rescue SalesFileValidator::InvalidFileError => error
     flash.now[:alert] = error.message
     render :new, status: :unprocessable_entity
   end

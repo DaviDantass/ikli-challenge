@@ -1,24 +1,15 @@
 require "csv"
 
 class SalesImporter
-  EXPECTED_HEADERS = [
-    "purchaser name", "item description", "item price",
-    "purchase count", "merchant address", "merchant name"
-  ].freeze
-
-  class InvalidFileError < StandardError; end
-
   def initialize(file)
     @file = file
   end
 
   def call
     total = 0.to_d
+    rows = SalesFileValidator.new(@file).validate!
 
     ActiveRecord::Base.transaction do
-      rows = CSV.read(@file.path, headers: true, col_sep: "\t")
-      raise InvalidFileError, "Cabeçalho do arquivo é inválido" unless rows.headers == EXPECTED_HEADERS
-
       rows.each do |row|
         purchaser = Purchaser.find_or_create_by!(name: row["purchaser name"])
 
@@ -46,7 +37,5 @@ class SalesImporter
     end
 
     total
-  rescue CSV::MalformedCSVError, ArgumentError, ActiveRecord::RecordInvalid => error
-    raise InvalidFileError, "Arquivo inválido: #{error.message}"
   end
 end
