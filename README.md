@@ -8,6 +8,7 @@ Aplicação Rails para importar vendas de arquivos TAB-separated, normalizar os 
 
 - Ruby 4.0.6 e Rails 8.1
 - PostgreSQL
+- BCrypt para armazenamento seguro de senhas
 - Minitest
 - RuboCop, Brakeman e Bundler Audit
 
@@ -29,7 +30,7 @@ rails db:prepare
 rails server
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000). O arquivo `inputs_example/example_input.tab` pode ser usado para testar o upload.
+Acesse [http://localhost:3000](http://localhost:3000), crie uma conta e faça login. O arquivo `inputs_example/example_input.tab` pode ser usado para testar o upload.
 
 > `rails db:prepare` cria o banco e executa as migrations. Se necessário, execute separadamente `rails db:create` e `rails db:migrate`.
 
@@ -77,8 +78,15 @@ Purchaser 1 ── N Purchase N ── 1 Item N ── 1 Merchant
 - `SalesFileValidator`: valida estrutura e conteúdo antes de qualquer escrita.
 - `SalesImporter`: reutiliza entidades existentes, registra as compras e calcula o total.
 - `ImportsController`: recebe o upload e apresenta sucesso ou erro.
+- `User`: autentica usuários com senha protegida por BCrypt.
 
 O preço unitário é armazenado em `Purchase`, preservando o valor praticado no momento da venda. Toda importação ocorre em uma transação: uma linha inválida impede salvamento parcial.
+
+## Autenticação
+
+O cadastro exige nome, e-mail único e senha de pelo menos oito caracteres. Senhas nunca são armazenadas diretamente: `has_secure_password` mantém apenas o hash BCrypt em `password_digest`.
+
+Após login, o identificador do usuário fica na sessão do Rails. A sessão é regenerada no login e no cadastro para evitar session fixation. Todas as rotas de upload exigem autenticação, e mensagens de erro não revelam se o e-mail ou a senha está incorreto.
 
 ## Validações
 
@@ -104,11 +112,13 @@ bundle exec bundler-audit
 
 O GitHub Actions executa testes, lint e verificações de segurança a cada push na `main` e em pull requests.
 
+Os testes automatizados cobrem validação de arquivos, normalização, cálculo do total, upload, cadastro, login, logout e proteção de acesso.
+
 ## Decisões e limitações
 
 - Compradores, comerciantes e itens são reutilizados para evitar duplicação de entidades.
 - Cada linha importada representa uma nova venda. Reenviar o mesmo arquivo cria novas compras intencionalmente.
-- Autenticação não foi incluída porque não faz parte dos requisitos básicos.
+- A autenticação tradicional foi adicionada como bônus sem depender de provedores externos ou credenciais OAuth.
 
 ## Solução de problemas
 

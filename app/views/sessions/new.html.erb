@@ -1,0 +1,17 @@
+<main class="page">
+  <section class="card">
+    <h1>Entrar</h1>
+
+      <%= form_with url: session_path, class: "upload-form" do |form| %>
+        <%= form.label :email, "E-mail" %>
+        <%= form.email_field :email, required: true, autocomplete: "email" %>
+
+        <%= form.label :password, "Senha" %>
+        <%= form.password_field :password, required: true, autocomplete: "current-password" %>
+
+        <%= form.submit "Entrar" %>
+    <% end %>
+
+    <%= link_to "Criar uma conta", new_registration_path, class: "auth-link" %>
+  </section>
+</main>

@@ -17,11 +17,45 @@ class SalesFileValidatorTest < ActiveSupport::TestCase
     assert_match(/quantidade inválida/, validate_content("John\tProduct\t10.00\t0\tStreet\tStore").message)
   end
 
+  test "rejects files larger than five megabytes" do
+    Tempfile.create([ "sales", ".tab" ]) do |file|
+      file.truncate(SalesFileValidator::MAX_FILE_SIZE + 1)
+
+      error = assert_raises(SalesFileValidator::InvalidFileError) do
+        SalesFileValidator.new(file).validate!
+      end
+      assert_match(/excede 5 MB/, error.message)
+    end
+  end
+
+  test "rejects invalid UTF-8" do
+    error = validate_raw_content("\xFF".b)
+    assert_match(/UTF-8/, error.message)
+  end
+
+  test "rejects rows with extra columns" do
+    error = validate_content("John\tProduct\t10.00\t1\tStreet\tStore\tExtra")
+    assert_match(/colunas inválida/, error.message)
+  end
+
+  test "rejects more than ten thousand sales" do
+    row = "John\tProduct\t10.00\t1\tStreet\tStore\n"
+    content = "#{SalesFileValidator::HEADERS.join("\t")}\n#{row * (SalesFileValidator::MAX_ROWS + 1)}"
+
+    error = validate_raw_content(content)
+    assert_match(/10.000 vendas/, error.message)
+  end
+
   private
 
   def validate_content(row)
+    validate_raw_content("#{SalesFileValidator::HEADERS.join("\t")}\n#{row}\n")
+  end
+
+  def validate_raw_content(content)
     Tempfile.create([ "sales", ".tab" ]) do |file|
-      file.write("#{SalesFileValidator::HEADERS.join("\t")}\n#{row}\n")
+      file.binmode
+      file.write(content)
       file.flush
       SalesFileValidator.new(file).validate!
     end

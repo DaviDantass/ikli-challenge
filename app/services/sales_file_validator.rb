@@ -21,7 +21,7 @@ class SalesFileValidator
     raise InvalidFileError, "O arquivo deve estar em UTF-8" unless content.valid_encoding?
 
     rows = CSV.parse(content, headers: true, col_sep: "\t")
-    raise InvalidFileError, "Cabeçalho do arquivo é inválido" unless rows.headers == HEADERS
+    raise InvalidFileError, "Cabeçalho do arquivo é inválido" unless rows.headers.compact == HEADERS
     raise InvalidFileError, "O arquivo não possui vendas" if rows.empty?
     raise InvalidFileError, "O arquivo excede 10.000 vendas" if rows.size > MAX_ROWS
 

@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ImportsControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in_as(create_user)
+  end
+
   test "shows the upload form" do
     get root_path
 

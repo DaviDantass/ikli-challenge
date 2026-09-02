@@ -1,12 +1,13 @@
 <main class="page">
   <section class="card">
+    <div class="session-bar">
+      <span>Olá, <%= current_user.name %></span>
+      <%= button_to "Sair", session_path, method: :delete, class: "link-button" %>
+    </div>
+
     <span class="eyebrow">Sales Importer</span>
     <h1>Importar vendas</h1>
     <p class="subtitle">Selecione um arquivo separado por tabulações (.tab ou .tsv).</p>
-
-    <% if flash[:alert] %>
-      <p class="message error"><%= flash[:alert] %></p>
-    <% end %>
 
     <%= form_with url: imports_path, multipart: true, data: { turbo: false }, class: "upload-form" do |form| %>
       <%= form.label :file, "Arquivo de vendas" %>

@@ -24,6 +24,14 @@
   </head>
 
   <body>
+    <% if flash[:notice] || flash[:alert] %>
+      <div class="flash-container">
+        <% flash.each do |type, message| %>
+          <p class="message <%= type == "notice" ? "success" : "error" %>"><%= message %></p>
+        <% end %>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
