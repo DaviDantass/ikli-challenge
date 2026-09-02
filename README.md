@@ -41,7 +41,7 @@ Acesse [http://localhost:3000](http://localhost:3000). O arquivo `inputs_example
 | `DB_PORT` | Porta do PostgreSQL | `5432` |
 | `DB_USERNAME` | Usuário | `postgres` |
 | `DB_PASSWORD` | Senha | `postgres` |
-| `DB_NAME` | Banco de desenvolvimento | `inkli_challenge` |
+| `DB_NAME` | Banco de desenvolvimento | `ikli_challenge` |
 
 O arquivo `.env` não é versionado. Use `.env.example` como modelo.
 
