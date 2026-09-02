@@ -1,0 +1,24 @@
+<main class="page">
+  <section class="card">
+    <span class="eyebrow">Sales Importer</span>
+    <h1>Importar vendas</h1>
+    <p class="subtitle">Selecione um arquivo separado por tabulações (.tab ou .tsv).</p>
+
+    <% if flash[:alert] %>
+      <p class="message error"><%= flash[:alert] %></p>
+    <% end %>
+
+    <%= form_with url: imports_path, multipart: true, data: { turbo: false }, class: "upload-form" do |form| %>
+      <%= form.label :file, "Arquivo de vendas" %>
+      <%= form.file_field :file, accept: ".tab,.tsv,text/tab-separated-values", required: true %>
+      <%= form.submit "Importar arquivo" %>
+    <% end %>
+
+    <% if @total %>
+      <div class="message success">
+        <span>Total bruto importado</span>
+        <strong><%= number_to_currency(@total, unit: "R$ ", separator: ",", delimiter: ".") %></strong>
+      </div>
+    <% end %> 
+  </section>
+</main>

@@ -1,24 +1,41 @@
-# README
+# Sales Importer
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Aplicação Rails que recebe arquivos TAB-separated, normaliza os dados de vendas em PostgreSQL e exibe o total bruto importado.
 
-Things you may want to cover:
+## Requisitos
 
-* Ruby version
+- Ruby 4.0.6
+- PostgreSQL
+- Bundler
 
-* System dependencies
+## Configuração
 
-* Configuration
+```bash
+bundle install
+cp .env.example .env
+```
 
-* Database creation
+Edite o `.env` com suas credenciais do PostgreSQL. Depois execute:
 
-* Database initialization
+```bash
+rails db:prepare
+rails server
+```
 
-* How to run the test suite
+Acesse `http://localhost:3000` e envie um arquivo `.tab` ou `.tsv`. Há um exemplo em `inputs_example/example_input.tab`.
 
-* Services (job queues, cache servers, search engines, etc.)
+## Formato
 
-* Deployment instructions
+O arquivo deve ter cabeçalho e estas colunas, nesta ordem:
 
-* ...
+```text
+purchaser name, item description, item price, purchase count, merchant address, merchant name
+```
+
+Os dados são normalizados em compradores, comerciantes, itens e compras. O total bruto é `item price × purchase count`.
+
+## Testes
+
+```bash
+rails test
+```
